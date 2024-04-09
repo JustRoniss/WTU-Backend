@@ -18,13 +18,11 @@ public class User {
     protected User() {
     }
 
-    // Constructor for creating instances
     public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
