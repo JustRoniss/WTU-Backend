@@ -1,0 +1,9 @@
+FROM openjdk:21
+LABEL authors="justronis"
+
+COPY ./target/WTU_Ancora-0.0.1-SNAPSHOT.jar /app/WTU_Ancora.jar
+
+CMD ["java", "-jar", "/app/WTU_Ancora.jar"]
+
+
+    
