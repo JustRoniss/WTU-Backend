@@ -3,9 +3,12 @@ package fiap.wtu_ancora.controller;
 import fiap.wtu_ancora.model.User;
 import fiap.wtu_ancora.model.UserRole;
 import fiap.wtu_ancora.model.dto.AuthenticationDTO;
+import fiap.wtu_ancora.model.dto.LoginResponseDTO;
 import fiap.wtu_ancora.model.dto.RegisterDTO;
 import fiap.wtu_ancora.repository.UserRepository;
+import fiap.wtu_ancora.security.TokenService;
 import jakarta.validation.Valid;
+import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,12 +29,17 @@ public class AuthenticationController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private TokenService tokenService;
+
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data){
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        return ResponseEntity.ok().build();
+        var token = tokenService.generateToken((User)auth.getPrincipal());
+
+        return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 
     @PostMapping("/register")
