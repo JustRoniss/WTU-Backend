@@ -31,6 +31,7 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/get-all").hasRole("ADMIN")
                         .requestMatchers("units/**").hasRole("ADMIN")
+                        .requestMatchers("events/**").hasRole("ADMIN")
                         .anyRequest().authenticated() // LEMBRA QUE ISSO TA AQUI EM KRL
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
