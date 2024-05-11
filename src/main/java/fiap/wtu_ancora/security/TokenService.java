@@ -16,18 +16,34 @@ import java.time.ZoneOffset;
 public class TokenService {
 
 
+//    public String generateToken(User user){
+//        System.out.println(user.getEmail());
+//        try{
+//            Algorithm algorithm = Algorithm.HMAC256("daledingdonguebiriflinstons"); // A secret deveria estar guardada em um arquivo do tipo sentive.conf, algo assim, mas por se tratar de um projeto de estudos, vai ficar aqui mesmo.
+//            String token = JWT.create()
+//                    .withIssuer("auth-api")
+//                    .withSubject(user.getEmail())
+//                    .withExpiresAt(genareteExpirationDate())
+//                    .sign(algorithm);
+//        return token;
+//        }catch (JWTCreationException exception){
+//                throw new RuntimeException("Erro ao gerar o token", exception);
+//        }
+//    }
+
     public String generateToken(User user){
         System.out.println(user.getEmail());
         try{
-            Algorithm algorithm = Algorithm.HMAC256("daledingdonguebiriflinstons"); // A secret deveria estar guardada em um arquivo do tipo sentive.conf, algo assim, mas por se tratar de um projeto de estudos, vai ficar aqui mesmo.
+            Algorithm algorithm = Algorithm.HMAC256("daledingdonguebiriflinstons"); // A chave secreta deveria estar armazenada de forma segura.
             String token = JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(user.getEmail())
                     .withExpiresAt(genareteExpirationDate())
+                    .withClaim("roles", user.getRole().name())
                     .sign(algorithm);
-        return token;
-        }catch (JWTCreationException exception){
-                throw new RuntimeException("Erro ao gerar o token", exception);
+            return token;
+        } catch (JWTCreationException exception){
+            throw new RuntimeException("Erro ao gerar o token", exception);
         }
     }
 
