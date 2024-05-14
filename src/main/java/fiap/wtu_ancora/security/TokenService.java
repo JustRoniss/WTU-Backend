@@ -1,6 +1,5 @@
 package fiap.wtu_ancora.security;
 
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
@@ -15,26 +14,10 @@ import java.time.ZoneOffset;
 @Service
 public class TokenService {
 
-
-//    public String generateToken(User user){
-//        System.out.println(user.getEmail());
-//        try{
-//            Algorithm algorithm = Algorithm.HMAC256("daledingdonguebiriflinstons"); // A secret deveria estar guardada em um arquivo do tipo sentive.conf, algo assim, mas por se tratar de um projeto de estudos, vai ficar aqui mesmo.
-//            String token = JWT.create()
-//                    .withIssuer("auth-api")
-//                    .withSubject(user.getEmail())
-//                    .withExpiresAt(genareteExpirationDate())
-//                    .sign(algorithm);
-//        return token;
-//        }catch (JWTCreationException exception){
-//                throw new RuntimeException("Erro ao gerar o token", exception);
-//        }
-//    }
-
     public String generateToken(User user){
         System.out.println(user.getEmail());
         try{
-            Algorithm algorithm = Algorithm.HMAC256("daledingdonguebiriflinstons"); // A chave secreta deveria estar armazenada de forma segura.
+            Algorithm algorithm = Algorithm.HMAC256("daledingdonguebiriflinstons"); // A secret deveria estar guardada em um arquivo do tipo sentive.conf, algo assim, mas por se tratar de um projeto de estudos, vai ficar aqui mesmo.
             String token = JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(user.getEmail())
