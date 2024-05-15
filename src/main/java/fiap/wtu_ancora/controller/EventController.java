@@ -3,6 +3,7 @@ package fiap.wtu_ancora.controller;
 import fiap.wtu_ancora.model.Event;
 import fiap.wtu_ancora.model.Unit;
 import fiap.wtu_ancora.model.User;
+import fiap.wtu_ancora.model.dto.EventDTO;
 import fiap.wtu_ancora.repository.EventRepository;
 import fiap.wtu_ancora.repository.UnitRepository;
 import fiap.wtu_ancora.repository.UserRepository;
@@ -33,15 +34,26 @@ public class EventController {
     public List<Event> getAllEvents() {return eventRepository.findAll();}
 
     @PostMapping("/create")
-    public ResponseEntity<Event> createEvent(@RequestBody Event event) {
-        Unit unit = unitRepository.findById(event.getUnitId()).orElse(null);
-        if (unit == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    public ResponseEntity<Event> createEvent(@RequestBody EventDTO eventDto) {
+        Set<Unit> units = new HashSet<>();
+        for(Long unitId : eventDto.getUnitIds()) {
+            Unit unit = unitRepository.findById(unitId).orElse(null);
+            if(unit != null) {
+                units.add(unit);
+            }else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
         }
-        event.setUnit(unit);
+
+        Event event = new Event();
+        event.setTitle(eventDto.getTitle());
+        event.setDescription(eventDto.getDescription());
+        event.setStartDate(eventDto.getStartDate());
+        event.setEndDate(eventDto.getEndDate());
+        event.setUnit(units);
 
         Set<User> users = new HashSet<>();
-        for (String email : event.getUserEmails()) {
+        for (String email : eventDto.getUserEmails()) {
             User user = userRepository.findUserByEmail(email);
             if (user != null) {
                 users.add(user);
