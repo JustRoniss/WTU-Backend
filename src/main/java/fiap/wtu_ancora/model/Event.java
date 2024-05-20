@@ -4,6 +4,7 @@ package fiap.wtu_ancora.model;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -26,9 +27,9 @@ public class Event {
     @Transient
     private Set<String> userEmails;
 
-    @ManyToOne
-    @JoinColumn(name = "unidade_id")
-    private Unit unit;
+    @ManyToMany
+    @JoinTable(name = "eventos_unidades")
+    private Set<Unit> unit;
 
     @ManyToMany
     @JoinTable(
@@ -95,11 +96,11 @@ public class Event {
     }
 
 
-    public Unit getUnit() {
-        return unit;
+    public Set<Unit> getUnit() {
+        return new HashSet<>(unit);
     }
 
-    public void setUnit(Unit unit) {
+    public void setUnit(Set<Unit> unit) {
         this.unit = unit;
     }
 
