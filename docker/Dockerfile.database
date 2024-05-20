@@ -1,12 +1,17 @@
 FROM mysql:8.0
 
-#Sei que o correto seria não versionar informações sensíveis como a senha do banco, mas nesse caso como se trata de um container vazio, tanto faz..
-
 ENV MYSQL_DATABASE=wtu_ancora
 ENV MYSQL_USER=brabo
 ENV MYSQL_PASSWORD=senhaSecreta
 ENV MYSQL_ROOT_PASSWORD=admin
+ENV MYSQL_ROOT_HOST=%
 
 COPY ./script.sql /docker-entrypoint-initdb.d/
+
+
+RUN echo "[mysqld]" >> /etc/mysql/my.cnf
+RUN echo "log_error_verbosity = 3" >> /etc/mysql/my.cnf
+RUN echo "character-set-server=utf8mb4" >> /etc/mysql/my.cnf
+RUN echo "collation-server=utf8mb4_unicode_ci" >> /etc/mysql/my.cnf
 
 EXPOSE 3306
