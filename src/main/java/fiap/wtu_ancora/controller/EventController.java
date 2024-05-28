@@ -50,10 +50,11 @@ public class EventController {
         event.setDescription(eventDto.getDescription());
         event.setStartDate(eventDto.getStartDate());
         event.setEndDate(eventDto.getEndDate());
-        event.setUnit(units);
+        event.setUnits(units);
+        event.setIframe(eventDto.getIframe());
 
         Set<User> users = new HashSet<>();
-        for (String email : eventDto.getUserEmails()) {
+        for (String email : eventDto.getUsersEmail()) {
             User user = userRepository.findUserByEmail(email);
             if (user != null) {
                 users.add(user);
@@ -74,6 +75,7 @@ public class EventController {
             event.setDescription(eventDatails.getDescription());
             event.setStartDate(eventDatails.getStartDate());
             event.setEndDate(eventDatails.getEndDate());
+            event.setIframe(eventDatails.getIframe());
             final Event updateEvent = eventRepository.save(event);
             return ResponseEntity.ok(updateEvent);
         }else{

@@ -9,7 +9,8 @@ public class EventDTO {
     private Date startDate;
     private Date endDate;
     private Set<Long> unitIds;
-    private Set<String> userEmails;
+    private Set<String> usersEmail;
+    private String iframe;
 
     public String getDescription() {
         return description;
@@ -51,11 +52,19 @@ public class EventDTO {
         this.unitIds = unitIds;
     }
 
-    public Set<String> getUserEmails() {
-        return userEmails;
+    public Set<String> getUsersEmail() {
+        return usersEmail;
     }
 
-    public void setUserEmails(Set<String> userEmails) {
-        this.userEmails = userEmails;
+    public void setUsersEmail(Set<String> usersEmail) {
+        this.usersEmail = usersEmail;
+    }
+
+    public String getIframe() {
+        return iframe;
+    }
+
+    public void setIframe(String iframe) {
+        this.iframe = iframe;
     }
 }
