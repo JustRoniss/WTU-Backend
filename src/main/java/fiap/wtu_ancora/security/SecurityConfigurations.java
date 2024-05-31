@@ -30,10 +30,11 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/get-all").hasRole("ADMIN")
+                        .requestMatchers("units/get-all").permitAll()
                         .requestMatchers("units/**").hasRole("ADMIN")
                         .requestMatchers("events/**").hasRole("ADMIN")
                         .requestMatchers("/home/**").hasRole("USER")
-                        .anyRequest().authenticated() // LEMBRA QUE ISSO TA AQUI EM KRL
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
