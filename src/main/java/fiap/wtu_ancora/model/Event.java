@@ -27,9 +27,16 @@ public class Event {
     @Transient
     private Set<String> userEmails;
 
+    private String iframe;
+
+
     @ManyToMany
-    @JoinTable(name = "eventos_unidades")
-    private Set<Unit> unit;
+    @JoinTable(
+            name = "eventos_unidades",
+            joinColumns = @JoinColumn(name = "evento_id"),
+            inverseJoinColumns = @JoinColumn(name = "units")
+    )
+    private Set<Unit> units = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -96,12 +103,12 @@ public class Event {
     }
 
 
-    public Set<Unit> getUnit() {
-        return new HashSet<>(unit);
+    public Set<Unit> getUnits() {
+        return units;
     }
 
-    public void setUnit(Set<Unit> unit) {
-        this.unit = unit;
+    public void setUnits(Set<Unit> units) {
+        this.units = units;
     }
 
     public Set<User> getUsers() {
@@ -110,5 +117,13 @@ public class Event {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public String getIframe() {
+        return iframe;
+    }
+
+    public void setIframe(String iframe) {
+        this.iframe = iframe;
     }
 }

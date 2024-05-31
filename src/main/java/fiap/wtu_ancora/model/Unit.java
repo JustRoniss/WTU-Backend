@@ -16,7 +16,7 @@ public class Unit {
     private String endereco;
     private boolean isFranchised;
 
-    @ManyToMany(mappedBy = "unit")
+    @ManyToMany(mappedBy = "units")
     private Set<Event> events;
 
     public Unit(Long id, String name, String endereco, boolean isFranchised) {
