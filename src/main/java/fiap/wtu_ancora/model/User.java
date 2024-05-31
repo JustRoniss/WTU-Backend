@@ -23,6 +23,10 @@ public class User implements UserDetails {
     @ManyToMany(mappedBy = "users")
     private Set<Event> events;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "unit_id")
+    private Unit unit;
+
     public User(String name, String email, String password, UserRole role) {
         this.name = name;
         this.email = email;
@@ -68,6 +72,22 @@ public class User implements UserDetails {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public Set<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(Set<Event> events) {
+        this.events = events;
+    }
+
+    public Unit getUnit() {
+        return unit;
+    }
+
+    public void setUnit(Unit unit) {
+        this.unit = unit;
     }
 
 

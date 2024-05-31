@@ -3,6 +3,7 @@ package fiap.wtu_ancora.model;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -18,6 +19,9 @@ public class Unit {
 
     @ManyToMany(mappedBy = "units")
     private Set<Event> events;
+
+    @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<User> users = new HashSet<>();
 
     public Unit(Long id, String name, String endereco, boolean isFranchised) {
         this.id = id;
