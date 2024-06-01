@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  mysql:
+    build:
+      context: .
+      dockerfile: Dockerfile.database
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: wtu_ancora
+      MYSQL_USER: brabo
+      MYSQL_PASSWORD: senhaSecreta
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.back
+    container_name: backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/wtu_ancora
+      SPRING_DATASOURCE_USERNAME: brabo
+      SPRING_DATASOURCE_PASSWORD: senhaSecreta
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+
+  frontend:
+    build:
+      context: ../../WTU-Front
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      REACT_APP_BACKEND_URL: http://backend:8080
+
+volumes:
+  db_data:
