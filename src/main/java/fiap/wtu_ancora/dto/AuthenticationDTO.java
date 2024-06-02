@@ -1,4 +1,4 @@
-package fiap.wtu_ancora.model.dto;
+package fiap.wtu_ancora.dto;
 
 public record AuthenticationDTO(String email, String password ) {
 }

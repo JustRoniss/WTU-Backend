@@ -3,7 +3,9 @@ package fiap.wtu_ancora.controller;
 import fiap.wtu_ancora.model.Event;
 import fiap.wtu_ancora.model.Unit;
 import fiap.wtu_ancora.model.User;
-import fiap.wtu_ancora.model.dto.EventDTO;
+import fiap.wtu_ancora.dto.EventDTO;
+import fiap.wtu_ancora.dto.UnitDTO;
+import fiap.wtu_ancora.dto.UserDTO;
 import fiap.wtu_ancora.repository.EventRepository;
 import fiap.wtu_ancora.repository.UnitRepository;
 import fiap.wtu_ancora.repository.UserRepository;
@@ -16,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/events")
@@ -31,17 +34,41 @@ public class EventController {
     private UserRepository userRepository;
 
     @GetMapping("/get-all")
-    public List<Event> getAllEvents() {return eventRepository.findAll();}
+    public List<EventDTO> getAllEvents() {
+        List<Event> events = eventRepository.findAll();
+
+        return events.stream().map(event -> {
+            Set<UnitDTO> units = event.getUnits().stream().map(unit -> new UnitDTO(unit.getId())).collect(Collectors.toSet());
+            Set<UserDTO> users = event.getUsers().stream().map(user -> new UserDTO(user.getEmail())).collect(Collectors.toSet());
+            EventDTO eventDTO = new EventDTO();
+            eventDTO.setTitle(event.getTitle());
+            eventDTO.setDescription(event.getDescription());
+            eventDTO.setStartDate(event.getStartDate());
+            eventDTO.setEndDate(event.getEndDate());
+            eventDTO.setIframe(event.getIframe());
+            eventDTO.setUnits(units);
+            eventDTO.setUsers(users);
+            return eventDTO;
+        }).collect(Collectors.toList());
+    }
 
     @PostMapping("/create")
     public ResponseEntity<Event> createEvent(@RequestBody EventDTO eventDto) {
         Set<Unit> units = new HashSet<>();
-        for(Long unitId : eventDto.getUnitIds()) {
-            Unit unit = unitRepository.findById(unitId).orElse(null);
+        for(UnitDTO unitDTO : eventDto.getUnits()) {
+            Unit unit = unitRepository.findById(unitDTO.getId()).orElse(null);
             if(unit != null) {
                 units.add(unit);
-            }else{
+            } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
+
+        Set<User> users = new HashSet<>();
+        for(UserDTO userDTO : eventDto.getUsers()) {
+            User user = userRepository.findUserByEmail(userDTO.getEmail());
+            if (user != null) {
+                users.add(user);
             }
         }
 
@@ -51,16 +78,8 @@ public class EventController {
         event.setStartDate(eventDto.getStartDate());
         event.setEndDate(eventDto.getEndDate());
         event.setUnits(units);
-        event.setIframe(eventDto.getIframe());
-
-        Set<User> users = new HashSet<>();
-        for (String email : eventDto.getUsersEmail()) {
-            User user = userRepository.findUserByEmail(email);
-            if (user != null) {
-                users.add(user);
-            }
-        }
         event.setUsers(users);
+        event.setIframe(eventDto.getIframe());
 
         Event savedEvent = eventRepository.save(event);
         return ResponseEntity.ok(savedEvent);

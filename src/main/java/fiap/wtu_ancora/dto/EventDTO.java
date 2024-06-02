@@ -1,4 +1,4 @@
-package fiap.wtu_ancora.model.dto;
+package fiap.wtu_ancora.dto;
 
 import java.util.Date;
 import java.util.Set;
@@ -8,9 +8,10 @@ public class EventDTO {
     private String description;
     private Date startDate;
     private Date endDate;
-    private Set<Long> unitIds;
-    private Set<String> usersEmail;
     private String iframe;
+    private Set<UnitDTO> units;
+    private Set<UserDTO> users;
+
 
     public String getDescription() {
         return description;
@@ -44,20 +45,20 @@ public class EventDTO {
         this.title = title;
     }
 
-    public Set<Long> getUnitIds() {
-        return unitIds;
+    public Set<UnitDTO> getUnits() {
+        return units;
     }
 
-    public void setUnitIds(Set<Long> unitIds) {
-        this.unitIds = unitIds;
+    public void setUnits(Set<UnitDTO> units) {
+        this.units = units;
     }
 
-    public Set<String> getUsersEmail() {
-        return usersEmail;
+    public Set<UserDTO> getUsers() {
+        return users;
     }
 
-    public void setUsersEmail(Set<String> usersEmail) {
-        this.usersEmail = usersEmail;
+    public void setUsers(Set<UserDTO> users) {
+        this.users = users;
     }
 
     public String getIframe() {

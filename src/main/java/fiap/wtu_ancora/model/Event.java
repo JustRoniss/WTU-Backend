@@ -30,7 +30,7 @@ public class Event {
     private String iframe;
 
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "eventos_unidades",
             joinColumns = @JoinColumn(name = "evento_id"),
@@ -38,7 +38,7 @@ public class Event {
     )
     private Set<Unit> units = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "eventos_usuarios",
             joinColumns = @JoinColumn(name = "evento_id"),
