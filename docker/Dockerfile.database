@@ -6,7 +6,7 @@ ENV MYSQL_PASSWORD=senhaSecreta
 ENV MYSQL_ROOT_PASSWORD=admin
 ENV MYSQL_ROOT_HOST=%
 
-COPY ./script.sql /docker-entrypoint-initdb.d/
+#COPY ./script.sql /docker-entrypoint-initdb.d/
 
 
 RUN echo "[mysqld]" >> /etc/mysql/my.cnf

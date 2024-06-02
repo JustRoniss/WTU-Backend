@@ -34,7 +34,7 @@ public class Event {
     @JoinTable(
             name = "eventos_unidades",
             joinColumns = @JoinColumn(name = "evento_id"),
-            inverseJoinColumns = @JoinColumn(name = "units")
+            inverseJoinColumns = @JoinColumn(name = "unit_id")
     )
     private Set<Unit> units = new HashSet<>();
 

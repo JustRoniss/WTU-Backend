@@ -1,10 +1,12 @@
 package fiap.wtu_ancora.controller;
 
+import fiap.wtu_ancora.model.Unit;
 import fiap.wtu_ancora.model.User;
 import fiap.wtu_ancora.model.UserRole;
 import fiap.wtu_ancora.model.dto.AuthenticationDTO;
 import fiap.wtu_ancora.model.dto.LoginResponseDTO;
 import fiap.wtu_ancora.model.dto.RegisterDTO;
+import fiap.wtu_ancora.repository.UnitRepository;
 import fiap.wtu_ancora.repository.UserRepository;
 import fiap.wtu_ancora.security.TokenService;
 import jakarta.validation.Valid;
@@ -32,6 +34,9 @@ public class AuthenticationController {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private UnitRepository unitRepository;
+
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data){
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
@@ -47,9 +52,11 @@ public class AuthenticationController {
         if(this.userRepository.findByEmail(data.email()) != null) return ResponseEntity.badRequest().build();
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
-        User newUser = new User(data.name(), data.email(), encryptedPassword, UserRole.USER );
+        Unit unit = this.unitRepository.findById(data.unitId()).orElseThrow(() -> new IllegalArgumentException("Unidade não encontrada"));
+        User newUser = new User(data.name(), data.email(), encryptedPassword, UserRole.USER);
+        newUser.setUnit(unit);
 
-        System.out.println("Segue: " + data.name() + " " + data.email() + " " + encryptedPassword);
+        System.out.println("Segue: " + data.name() + " " + data.email() + " " + encryptedPassword + " " + unit.getName());
 
         this.userRepository.save(newUser);
 
