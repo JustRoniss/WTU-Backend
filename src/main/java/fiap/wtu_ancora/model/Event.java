@@ -30,7 +30,7 @@ public class Event {
     private String iframe;
 
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
             name = "eventos_unidades",
             joinColumns = @JoinColumn(name = "evento_id"),
@@ -38,13 +38,13 @@ public class Event {
     )
     private Set<Unit> units = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
             name = "eventos_usuarios",
             joinColumns = @JoinColumn(name = "evento_id"),
             inverseJoinColumns = @JoinColumn(name = "usuario_id")
     )
-    private Set<User> users;
+    private Set<User> users = new HashSet<>();
 
     public Long getId() {
         return id;

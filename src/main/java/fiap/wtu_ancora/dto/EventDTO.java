@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Set;
 
 public class EventDTO {
+    private Long id;
     private String title;
     private String description;
     private Date startDate;
@@ -12,6 +13,9 @@ public class EventDTO {
     private Set<UnitDTO> units;
     private Set<UserDTO> users;
 
+    public Long getId() {return id;}
+
+    public void setId(Long id) {this.id = id; }
 
     public String getDescription() {
         return description;

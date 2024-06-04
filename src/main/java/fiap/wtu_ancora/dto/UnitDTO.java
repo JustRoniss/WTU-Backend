@@ -2,6 +2,9 @@ package fiap.wtu_ancora.dto;
 
 public class UnitDTO {
 
+    private Long id;
+
+    private String name;
 
     public UnitDTO(Long id) {
         this.id = id;
@@ -10,7 +13,13 @@ public class UnitDTO {
     public UnitDTO() {
     }
 
-    private Long id;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Long getId() {
         return id;
