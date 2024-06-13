@@ -33,7 +33,7 @@ public class UnitController {
         if(unitOptional.isPresent()){
             Unit unit = unitOptional.get();
             unit.setName(unitDatails.getName());
-            unit.setName(unitDatails.getEndereco());
+            unit.setEndereco(unitDatails.getEndereco());
             unit.setFranchised(unitDatails.isFranchised());
             final Unit updatedUnit = unitRepository.save(unit);
             return ResponseEntity.ok(updatedUnit);
