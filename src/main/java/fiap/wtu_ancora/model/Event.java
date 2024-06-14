@@ -27,6 +27,7 @@ public class Event {
     @Transient
     private Set<String> userEmails;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String iframe;
 
 
