@@ -61,20 +61,24 @@ public class EventController {
     @PostMapping("/create")
     public ResponseEntity<Event> createEvent(@RequestBody EventDTO eventDto) {
         Set<Unit> units = new HashSet<>();
-        for(UnitDTO unitDTO : eventDto.getUnits()) {
-            Unit unit = unitRepository.findById(unitDTO.getId()).orElse(null);
-            if(unit != null) {
-                units.add(unit);
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        if(eventDto.getUnits() != null){
+            for(UnitDTO unitDTO : eventDto.getUnits()) {
+                Unit unit = unitRepository.findById(unitDTO.getId()).orElse(null);
+                if(unit != null) {
+                    units.add(unit);
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                }
             }
         }
 
         Set<User> users = new HashSet<>();
-        for(UserDTO userDTO : eventDto.getUsers()) {
-            User user = userRepository.findUserByEmail(userDTO.getEmail());
-            if (user != null) {
-                users.add(user);
+        if(eventDto.getUsers() != null){
+            for(UserDTO userDTO : eventDto.getUsers()) {
+                User user = userRepository.findUserByEmail(userDTO.getEmail());
+                if (user != null) {
+                    users.add(user);
+                }
             }
         }
 
@@ -86,7 +90,6 @@ public class EventController {
         event.setUnits(units);
         event.setUsers(users);
         event.setIframe(eventDto.getIframe());
-
         Event savedEvent = eventRepository.save(event);
         return ResponseEntity.ok(savedEvent);
     }
