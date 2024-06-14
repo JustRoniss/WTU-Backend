@@ -47,6 +47,23 @@ public class Event {
     )
     private Set<User> users = new HashSet<>();
 
+    public Event(Long id, String title, String description, Date startDate, Date endDate, Long unitId, Set<String> userEmails, String iframe, Set<Unit> units, Set<User> users) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.unitId = unitId;
+        this.userEmails = userEmails;
+        this.iframe = iframe;
+        this.units = units;
+        this.users = users;
+    }
+
+    public Event() {
+
+    }
+
     public Long getId() {
         return id;
     }

@@ -1,0 +1,32 @@
+# WTU_Request's
+
+###
+# @name GET_User's
+GET http://localhost:8080/users/get-all
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoLWFwaSIsInN1YiI6InJvb3RAYW5jb3JhLmNvbSIsImV4cCI6MTcxODQwMzcyNiwicm9sZXMiOiJBRE1JTiJ9.C_kRcVMd-5oisDZfawKd_hTDn_zt3zrjly-sVMQACIw
+
+###
+# @name Post_eventos
+POST http://localhost:8080/events/create
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoLWFwaSIsInN1YiI6InJvb3RAYW5jb3JhLmNvbSIsImV4cCI6MTcxODQwMzcyNiwicm9sZXMiOiJBRE1JTiJ9.C_kRcVMd-5oisDZfawKd_hTDn_zt3zrjly-sVMQACIw
+Content-Type: application/json
+
+{
+  "title": "Evento Teste ",
+  "description": "Descricao",
+  "startDate": "2024-06-14T08:05:00.000Z",
+  "endDate": "2024-06-14T05:02:00.000Z",
+  "units": [
+    {
+      "id": 1
+    }
+  ],
+  "users": [],
+  "iframe": "123321"
+}
+
+###
+# @name GET_Events_UserEmail
+GET http://localhost:8080/invites/get-invites/?
+    email=josueteobaldo220@hotmail.com
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoLWFwaSIsInN1YiI6InJvb3RAYW5jb3JhLmNvbSIsImV4cCI6MTcxODQwMzcyNiwicm9sZXMiOiJBRE1JTiJ9.C_kRcVMd-5oisDZfawKd_hTDn_zt3zrjly-sVMQACIw

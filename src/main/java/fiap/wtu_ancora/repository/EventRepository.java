@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("SELECT DISTINCT e FROM Event e " +
-            "JOIN e.users u " +
+            "LEFT JOIN e.users u " +
             "LEFT JOIN e.units un " +
             "LEFT JOIN un.users unitUsers " +
             "WHERE u.email = :email OR unitUsers.email = :email")

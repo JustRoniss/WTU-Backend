@@ -9,6 +9,7 @@ import fiap.wtu_ancora.dto.UserDTO;
 import fiap.wtu_ancora.repository.EventRepository;
 import fiap.wtu_ancora.repository.UnitRepository;
 import fiap.wtu_ancora.repository.UserRepository;
+import fiap.wtu_ancora.service.PlaywrightService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,8 @@ public class EventController {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PlaywrightService playwrightService;
 
     @GetMapping("/get-all")
     public List<EventDTO> getAllEvents() {
@@ -90,6 +93,7 @@ public class EventController {
         event.setUnits(units);
         event.setUsers(users);
         event.setIframe(eventDto.getIframe());
+        playwrightService.runStreamYardAutomation();
         Event savedEvent = eventRepository.save(event);
         return ResponseEntity.ok(savedEvent);
     }
