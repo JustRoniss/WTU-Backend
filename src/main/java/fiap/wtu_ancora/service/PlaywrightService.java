@@ -11,6 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class PlaywrightService {
@@ -109,7 +111,7 @@ public class PlaywrightService {
         //Elementos Dia
         lblTitulo = page.locator("//div[contains(@class, 'InputLabel')]//child::label[contains(text(), 'Título')]//following::input[1]");
         lblDescricao = page.locator("//div[contains(@class, 'InputLabel')]//child::label[contains(text(), 'Descrição')]//following::textarea[1]");
-        dateDiaContainer = page.locator("//input[contains(@value, 'Hoje')]");
+        dateDiaContainer = page.locator("//input[contains(@value, 'Hoje') or contains(@value, ' 2024')]");
         lblMonthYear = page.locator("//h4[contains(@class, 'Text__StyledText-sc-1qjs20c-0')]");
         btnNextMonth = page.locator("//button[@aria-label='Mês seguinte']");
         btnPreviousMonth = page.locator("//button[@aria-label='Mês passado']");
@@ -208,8 +210,18 @@ public class PlaywrightService {
 
 
             String currentMonthYear = lblMonthYear.textContent().trim();
+            Pattern pattern = Pattern.compile("\\w+ (\\d{4})");
+            Matcher matcher = pattern.matcher(expectedMonthYear);
+            String expectedMonth = "";
+            String expectedYear = "";
 
-            while (!currentMonthYear.equals(expectedMonthYear)) {
+            if (matcher.find()) {
+                expectedMonth = matcher.group(1);
+            }
+            if (matcher.find()) {
+                expectedYear = matcher.group(2);
+            }
+            while (!currentMonthYear.contains(expectedMonth) && !currentMonthYear.contains(expectedYear)) {
                 if (isEarlierThan(currentMonthYear, expectedMonthYear)) {
                     btnNextMonth.click();
                 } else {
