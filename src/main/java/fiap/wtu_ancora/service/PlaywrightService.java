@@ -1,10 +1,15 @@
 package fiap.wtu_ancora.service;
 
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.LoadState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 @Service
@@ -72,20 +77,20 @@ public class PlaywrightService {
     private String descricao = "Descricao Teste";
     private String expectedMonthYear = "Agosto 2024";
     private String dia = "29";
-    private String startHoras = "";
-    private String startMinutos = "";
-    private String duracao = "";
+    private String startHoras = "14";
+    private String startMinutos = "30";
+    private String duracao = "120";
 
     @Async
-    public void runStreamYardAutomation() {
+    public void runStreamYardAutomation(String titulo, String descricao, Date startDateTime, int durationMinutes) {
         try {
-            runSetWebnar(chromiumBrowser);
+            runSetWebnar(chromiumBrowser, startDateTime,  titulo, descricao, durationMinutes);
         } catch (Exception e) {
             logger.info("Error during test execution: \" + e.getMessage()");
         }
     }
 
-    private void runSetWebnar(Browser browser) {
+    private void runSetWebnar(Browser browser, Date startDateTime, String titulo, String descricao,int durationMinutes) {
         BrowserContext context = browser.newContext();
         page = context.newPage();
         pageGoogle = context.newPage();
@@ -109,7 +114,7 @@ public class PlaywrightService {
         btnNextMonth = page.locator("//button[@aria-label='Mês seguinte']");
         btnPreviousMonth = page.locator("//button[@aria-label='Mês passado']");
         dayButtons = page.locator("//div[contains(@class, 'DatePicker__Weeks-sc-179d9x6-4')]//button[@aria-label]");
-
+        dateHoras = page.locator("//select[contains(@id, 'select_TH36wjNCJfKZ') or contains(@class, 'Default__StyledSelect-sc-usmdbc-4')]");
 
         //Elementos Google
         campoEmailGoogle = pageGoogle.locator("//input[contains(@type, 'email')]");
@@ -195,7 +200,15 @@ public class PlaywrightService {
             lblTitulo.fill(titulo);
             lblDescricao.fill(descricao);
             dateDiaContainer.click();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM yyyy");
+            String expectedMonthYear = startDateTime.toGMTString().formatted(formatter);
+            String dia = String.valueOf(startDateTime.getDay());
+            String startHoras = String.valueOf(startDateTime.getHours());
+            String startMinutos = String.valueOf(startDateTime.getMinutes());
+
+
             String currentMonthYear = lblMonthYear.textContent().trim();
+
             while (!currentMonthYear.equals(expectedMonthYear)) {
                 if (isEarlierThan(currentMonthYear, expectedMonthYear)) {
                     btnNextMonth.click();
@@ -213,8 +226,13 @@ public class PlaywrightService {
                     break;
                 }
             }
-
-
+            if (dateHoras.count() > 0) {
+                dateHoras.first().selectOption(startHoras);
+                dateHoras.all().get(1).selectOption(startMinutos);
+                dateHoras.all().get(2).selectOption(duracao);
+            } else {
+                logger.severe("Erro: Não foram encontrados elementos em dateHoras.");
+            }
             page.close();
             pageGoogle.close();
             context.close();

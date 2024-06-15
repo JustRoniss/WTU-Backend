@@ -15,10 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -93,8 +91,12 @@ public class EventController {
         event.setUnits(units);
         event.setUsers(users);
         event.setIframe(eventDto.getIframe());
-        playwrightService.runStreamYardAutomation();
         Event savedEvent = eventRepository.save(event);
+        // Extraindo os parâmetros
+        String titulo = eventDto.getTitle();
+        String descricao = eventDto.getDescription();
+        Date startDateTime = eventDto.getStartDate();
+        playwrightService.runStreamYardAutomation(event.getTitle(), event.getDescription(), event.getStartDate(), 120);
         return ResponseEntity.ok(savedEvent);
     }
 
