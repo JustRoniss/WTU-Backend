@@ -8,7 +8,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoLWFwa
 ###
 # @name Post_eventos
 POST http://localhost:8080/events/create
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoLWFwaSIsInN1YiI6InJvb3RAYW5jb3JhLmNvbSIsImV4cCI6MTcxODQwMzcyNiwicm9sZXMiOiJBRE1JTiJ9.C_kRcVMd-5oisDZfawKd_hTDn_zt3zrjly-sVMQACIw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoLWFwaSIsInN1YiI6InJvb3RAYW5jb3JhLmNvbSIsImV4cCI6MTcxODQxNDc2OCwicm9sZXMiOiJBRE1JTiJ9.PeRrwnvXPkI4q9Kue5sYgRn1zpnjSlp05qrQA5647DY
 Content-Type: application/json
 
 {

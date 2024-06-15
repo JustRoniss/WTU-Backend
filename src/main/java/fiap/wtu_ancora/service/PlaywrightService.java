@@ -29,6 +29,7 @@ public class PlaywrightService {
     private String urlGoogleEmail = "https://mail.google.com/";
     private String strCodigo;
 
+
     // Elementos
     private Locator btnLogin;
     private Locator campoEmail;
@@ -53,16 +54,24 @@ public class PlaywrightService {
     private Locator btnWebnarButton;
     private Locator lblTitulo;
     private Locator lblDescricao;
-    private Locator dateDia;
+    private Locator btnContinuar;
+    private Locator btnAceitarCookie;
+    private Locator dateDiaContainer;
     private Locator dateHoras;
     private Locator dateMinutos;
     private Locator dateDuracao;
+    private Locator lblMonthYear;
+    private Locator btnNextMonth;
+    private Locator btnPreviousMonth;
+    private Locator dayButtons;
+
     private Locator btnCriar;
 
     //Parametros evento
     private String titulo = "Titulo Teste";
     private String descricao = "Descricao Teste";
-    private String dia = "";
+    private String expectedMonthYear = "Agosto 2024";
+    private String dia = "29";
     private String startHoras = "";
     private String startMinutos = "";
     private String duracao = "";
@@ -90,9 +99,17 @@ public class PlaywrightService {
         h1SessionLimit = page.locator("//h1[contains(text(), 'Você atingiu seu limite de sessões ativas')]");
         bntSessionLimit = page.locator("//input[contains(@class, 'RadioButton')][1]");
         bntSessionLimitSubmit = page.locator("//span[contains(text(), 'Sair desta sessão')]");
+        btnContinuar = page.locator("//span[contains(text(), 'Continuar')]");
+        btnAceitarCookie = page.locator("//button[contains(@class, 'osano-cm-accept osano-cm-buttons__button osano-cm-button osano-cm-button--type_accept')]");
+        //Elementos Dia
         lblTitulo = page.locator("//div[contains(@class, 'InputLabel')]//child::label[contains(text(), 'Título')]//following::input[1]");
         lblDescricao = page.locator("//div[contains(@class, 'InputLabel')]//child::label[contains(text(), 'Descrição')]//following::textarea[1]");
-        dateDia = page.locator("//div[contains(@class, 'InputLabel')]//child::label[contains(text(), 'Título')]//following::input[contains(@value, 'Hoje')]");
+        dateDiaContainer = page.locator("//input[contains(@value, 'Hoje')]");
+        lblMonthYear = page.locator("//h4[contains(@class, 'Text__StyledText-sc-1qjs20c-0')]");
+        btnNextMonth = page.locator("//button[@aria-label='Mês seguinte']");
+        btnPreviousMonth = page.locator("//button[@aria-label='Mês passado']");
+        dayButtons = page.locator("//div[contains(@class, 'DatePicker__Weeks-sc-179d9x6-4')]//button[@aria-label]");
+
 
         //Elementos Google
         campoEmailGoogle = pageGoogle.locator("//input[contains(@type, 'email')]");
@@ -137,13 +154,13 @@ public class PlaywrightService {
                 }
                 Thread.sleep(3000);
                 trEmailCodigo.click();
+                Thread.sleep(3000);
                 if(lblCodigoGoogle.isVisible()){
                     strCodigo =  lblCodigoGoogle.textContent().trim();
                 } else if (lblCodigoGoogleAlternative.isVisible()) {
                     strCodigo =  lblCodigoGoogleAlternative.textContent().trim();
                 }
                 strCodigo = strCodigo.replaceAll("\\D", "");
-                pageGoogle.close();
                 page.bringToFront();
                 campoCodigoEmail1.fill(Character.toString(strCodigo.charAt(0)));
                 campoCodigoEmail2.fill(Character.toString(strCodigo.charAt(1)));
@@ -152,15 +169,54 @@ public class PlaywrightService {
                 campoCodigoEmail5.fill(Character.toString(strCodigo.charAt(4)));
                 campoCodigoEmail6.fill(Character.toString(strCodigo.charAt(5)));
             }
+            Thread.sleep(5000);
             if(h1SessionLimit.isVisible()){
-                bntSessionLimit.check();
-                bntSessionLimitSubmit.click();
+                Thread.sleep(3000);
+                Locator checkboxes = page.locator("//input[contains(@class, 'RadioButton')]");
+                int count = checkboxes.count();
+                for (int i = 0; i < count; i++) {
+                    if (!h1SessionLimit.isVisible()) {
+                        break;
+                    }
+                    checkboxes.nth(i).check();
+                    Thread.sleep(3000);
+                    if(btnAceitarCookie.isVisible()){
+                        btnAceitarCookie.click();
+                    }
+                    bntSessionLimitSubmit.click();
+                    Thread.sleep(1500);
+                    if (btnContinuar.isVisible()){
+                        btnContinuar.click();
+                    }
+                }
             }
+            Thread.sleep(2000);
             btnWebnarButton.click();
             lblTitulo.fill(titulo);
             lblDescricao.fill(descricao);
-            page.fill(dateDia.textContent(), dia, new Page.FillOptions().setForce(true));
+            dateDiaContainer.click();
+            String currentMonthYear = lblMonthYear.textContent().trim();
+            while (!currentMonthYear.equals(expectedMonthYear)) {
+                if (isEarlierThan(currentMonthYear, expectedMonthYear)) {
+                    btnNextMonth.click();
+                } else {
+                    btnPreviousMonth.click();
+                }
+                Thread.sleep(1000); // Aguarda a atualização da página
+                currentMonthYear = lblMonthYear.textContent().trim();
+            }
+            int dayButtonCount = dayButtons.count();
+            for (int i = 0; i < dayButtonCount; i++) {
+                Locator button = dayButtons.nth(i);
+                if (button.getAttribute("aria-label").equals(dia)) {
+                    button.click();
+                    break;
+                }
+            }
+
+
             page.close();
+            pageGoogle.close();
             context.close();
             browser.close();
         } catch (Exception e) {
@@ -169,4 +225,36 @@ public class PlaywrightService {
             playwright.close();
         }
     }
+    private boolean isEarlierThan(String current, String expected) {
+        // Função para comparar as datas em formato "MMMM yyyy"
+        String[] currentParts = current.split(" ");
+        String[] expectedParts = expected.split(" ");
+        int currentYear = Integer.parseInt(currentParts[1]);
+        int expectedYear = Integer.parseInt(expectedParts[1]);
+        if (currentYear != expectedYear) {
+            return currentYear < expectedYear;
+        }
+        int currentMonth = getMonthNumber(currentParts[0]);
+        int expectedMonth = getMonthNumber(expectedParts[0]);
+        return currentMonth < expectedMonth;
+    }
+    private int getMonthNumber(String month) {
+        switch (month.toLowerCase()) {
+            case "janeiro": return 1;
+            case "fevereiro": return 2;
+            case "março": return 3;
+            case "abril": return 4;
+            case "maio": return 5;
+            case "junho": return 6;
+            case "julho": return 7;
+            case "agosto": return 8;
+            case "setembro": return 9;
+            case "outubro": return 10;
+            case "novembro": return 11;
+            case "dezembro": return 12;
+            default: return 0;
+        }
+    }
+
 }
+
