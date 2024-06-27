@@ -1,18 +1,18 @@
 package fiap.wtu_ancora.service;
 
 import com.microsoft.playwright.*;
-import com.microsoft.playwright.options.LoadState;
+import fiap.wtu_ancora.model.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
+import java.time.format.TextStyle;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class PlaywrightService {
@@ -25,14 +25,14 @@ public class PlaywrightService {
     @Autowired
     private Browser webkitBrowser;
 
-
+    private String Iframe;
     private Page page;
     private Page pageGoogle;
 
     //Variáveis
     private String urlStreamYard = "https://streamyard.com/";
-    private String emailFiapEsor = "fiapjrv@gmail.com";
-    private String senhaFiapEsor = "fiap@123";
+    private String emailFiapEsor = "tatapay729@devncie.com";
+    private String senhaFiapEsor = "";
     private String urlGoogleEmail = "https://mail.google.com/";
     private String strCodigo;
 
@@ -71,28 +71,27 @@ public class PlaywrightService {
     private Locator btnNextMonth;
     private Locator btnPreviousMonth;
     private Locator dayButtons;
-
+    private Locator btnContinuarWebNar;
     private Locator btnCriar;
+    private Locator btnCompartilharWebNar;
+    private Locator btnInconporar;
+    private Locator txtAreaIframe;
 
     //Parametros evento
-    private String titulo = "Titulo Teste";
-    private String descricao = "Descricao Teste";
-    private String expectedMonthYear = "Agosto 2024";
-    private String dia = "29";
-    private String startHoras = "14";
-    private String startMinutos = "30";
-    private String duracao = "120";
+    private String duracao = "";
 
     @Async
-    public void runStreamYardAutomation(String titulo, String descricao, Date startDateTime, int durationMinutes) {
+    public String runStreamYardAutomation(String titulo, String descricao, LocalDateTime startDateTime, int durationMinutes) {
         try {
-            runSetWebnar(chromiumBrowser, startDateTime,  titulo, descricao, durationMinutes);
+            Iframe = runSetWebnar(chromiumBrowser, startDateTime,  titulo, descricao, durationMinutes);
         } catch (Exception e) {
-            logger.info("Error during test execution: \" + e.getMessage()");
+            logger.info("Error during test execution: \" " + e.getMessage());
         }
+        return Iframe;
     }
 
-    private void runSetWebnar(Browser browser, Date startDateTime, String titulo, String descricao,int durationMinutes) {
+    private String runSetWebnar(Browser browser, LocalDateTime startDateTime, String titulo, String descricao, int durationMinutes) {
+        duracao = String.valueOf(durationMinutes);
         BrowserContext context = browser.newContext();
         page = context.newPage();
         pageGoogle = context.newPage();
@@ -108,11 +107,18 @@ public class PlaywrightService {
         bntSessionLimitSubmit = page.locator("//span[contains(text(), 'Sair desta sessão')]");
         btnContinuar = page.locator("//span[contains(text(), 'Continuar')]");
         btnAceitarCookie = page.locator("//button[contains(@class, 'osano-cm-accept osano-cm-buttons__button osano-cm-button osano-cm-button--type_accept')]");
+        btnCriar = page.locator("//span[contains(text(), 'Criar')]");
+        btnContinuarWebNar = page.locator("//span[contains(text(), 'Continuar') and contains(@class, 'Button__InnerSpan-sc-1ewvxrb-1 kZLLcK')]");
+        btnCompartilharWebNar = page.locator("//span[contains(text(), 'Compartilhar')]");
+        btnInconporar = page.locator("//span[contains(text(), 'Incorporar')]");
+        txtAreaIframe = page.locator("//textarea[contains(@id, 'input_me5T3RH8p9RA')]");
+
         //Elementos Dia
         lblTitulo = page.locator("//div[contains(@class, 'InputLabel')]//child::label[contains(text(), 'Título')]//following::input[1]");
         lblDescricao = page.locator("//div[contains(@class, 'InputLabel')]//child::label[contains(text(), 'Descrição')]//following::textarea[1]");
         dateDiaContainer = page.locator("//input[contains(@value, 'Hoje') or contains(@value, ' 2024')]");
-        lblMonthYear = page.locator("//h4[contains(@class, 'Text__StyledText-sc-1qjs20c-0')]");
+        lblMonthYear = page.locator("//h4[@color='default' and contains(@class, 'Text__StyledText') and contains(normalize-space(.), '2024')]");
+
         btnNextMonth = page.locator("//button[@aria-label='Mês seguinte']");
         btnPreviousMonth = page.locator("//button[@aria-label='Mês passado']");
         dayButtons = page.locator("//div[contains(@class, 'DatePicker__Weeks-sc-179d9x6-4')]//button[@aria-label]");
@@ -144,7 +150,7 @@ public class PlaywrightService {
             campoEmail.fill(emailFiapEsor);
             Thread.sleep(2000);
             btnLoginEmailSubmit.click();
-            Thread.sleep(4000);
+            Thread.sleep(20000);
             if(lblVerificarEmail.isVisible()){
                 pageGoogle.bringToFront();
                 pageGoogle.navigate(urlGoogleEmail);
@@ -202,40 +208,53 @@ public class PlaywrightService {
             lblTitulo.fill(titulo);
             lblDescricao.fill(descricao);
             dateDiaContainer.click();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM yyyy");
-            String expectedMonthYear = startDateTime.toGMTString().formatted(formatter);
-            String dia = String.valueOf(startDateTime.getDay());
-            String startHoras = String.valueOf(startDateTime.getHours());
-            String startMinutos = String.valueOf(startDateTime.getMinutes());
-
-
+            String expectedMonthYear = startDateTime.format(DateTimeFormatter.ofPattern("MMMM yyyy", new Locale("pt", "BR")));
+            String dia = String.valueOf(startDateTime.getDayOfMonth());
+            String startHoras = String.valueOf(startDateTime.getHour());
+            String startMinutos = String.valueOf(startDateTime.getMinute());
             String currentMonthYear = lblMonthYear.textContent().trim();
-            Pattern pattern = Pattern.compile("\\w+ (\\d{4})");
-            Matcher matcher = pattern.matcher(expectedMonthYear);
-            String expectedMonth = "";
-            String expectedYear = "";
 
-            if (matcher.find()) {
-                expectedMonth = matcher.group(1);
-            }
-            if (matcher.find()) {
-                expectedYear = matcher.group(2);
-            }
-            while (!currentMonthYear.contains(expectedMonth) && !currentMonthYear.contains(expectedYear)) {
+            String[] parts = currentMonthYear.split(" ");
+            String currentMonth = parts[0];
+            String currentYear = parts[1];
+            String expectedMonth = startDateTime.getMonth().getDisplayName(TextStyle.FULL, new Locale("pt", "BR"));
+            String expectedYear = String.valueOf(startDateTime.getYear());
+            while (!currentMonth.contains(expectedMonth) || !currentYear.contains(expectedYear)) {
                 if (isEarlierThan(currentMonthYear, expectedMonthYear)) {
                     btnNextMonth.click();
                 } else {
                     btnPreviousMonth.click();
                 }
-                Thread.sleep(1000); // Aguarda a atualização da página
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 currentMonthYear = lblMonthYear.textContent().trim();
+                parts = currentMonthYear.split(" ");
+                currentMonth = parts[0].toLowerCase();
+                currentYear = parts[1];
             }
+
+            System.out.println("Chegou ao mês esperado: " + expectedMonthYear);
+
+
             int dayButtonCount = dayButtons.count();
             for (int i = 0; i < dayButtonCount; i++) {
                 Locator button = dayButtons.nth(i);
-                if (button.getAttribute("aria-label").equals(dia)) {
-                    button.click();
-                    break;
+                if (Objects.equals(button.getAttribute("aria-label"), dia)) {
+                    int retryCount = 0;
+                    while (!button.isEnabled() && retryCount < 10) {
+                        retryCount++;
+                    }
+                    if (button.isEnabled()) {
+                        Thread.sleep(1000);
+                        button.click();
+                        break;
+                    } else {
+                        System.out.println("Botão não está habilitado após várias tentativas.");
+                    }
                 }
             }
             if (dateHoras.count() > 0) {
@@ -245,18 +264,24 @@ public class PlaywrightService {
             } else {
                 logger.severe("Erro: Não foram encontrados elementos em dateHoras.");
             }
+            btnCriar.click();
+            btnContinuarWebNar.click();
+            btnCompartilharWebNar.last().click();
+            btnInconporar.click();
+            Iframe = txtAreaIframe.getAttribute("value");
             page.close();
             pageGoogle.close();
             context.close();
             browser.close();
+
         } catch (Exception e) {
             logger.severe("Error during test execution: " + e.getMessage());
         } finally {
             playwright.close();
         }
+        return Iframe;
     }
     private boolean isEarlierThan(String current, String expected) {
-        // Função para comparar as datas em formato "MMMM yyyy"
         String[] currentParts = current.split(" ");
         String[] expectedParts = expected.split(" ");
         int currentYear = Integer.parseInt(currentParts[1]);
@@ -268,6 +293,7 @@ public class PlaywrightService {
         int expectedMonth = getMonthNumber(expectedParts[0]);
         return currentMonth < expectedMonth;
     }
+
     private int getMonthNumber(String month) {
         switch (month.toLowerCase()) {
             case "janeiro": return 1;

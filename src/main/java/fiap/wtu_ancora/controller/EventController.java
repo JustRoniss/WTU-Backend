@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -62,10 +63,10 @@ public class EventController {
     @PostMapping("/create")
     public ResponseEntity<Event> createEvent(@RequestBody EventDTO eventDto) {
         Set<Unit> units = new HashSet<>();
-        if(eventDto.getUnits() != null){
-            for(UnitDTO unitDTO : eventDto.getUnits()) {
+        if (eventDto.getUnits() != null) {
+            for (UnitDTO unitDTO : eventDto.getUnits()) {
                 Unit unit = unitRepository.findById(unitDTO.getId()).orElse(null);
-                if(unit != null) {
+                if (unit != null) {
                     units.add(unit);
                 } else {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -74,8 +75,8 @@ public class EventController {
         }
 
         Set<User> users = new HashSet<>();
-        if(eventDto.getUsers() != null){
-            for(UserDTO userDTO : eventDto.getUsers()) {
+        if (eventDto.getUsers() != null) {
+            for (UserDTO userDTO : eventDto.getUsers()) {
                 User user = userRepository.findUserByEmail(userDTO.getEmail());
                 if (user != null) {
                     users.add(user);
@@ -90,13 +91,12 @@ public class EventController {
         event.setEndDate(eventDto.getEndDate());
         event.setUnits(units);
         event.setUsers(users);
-        event.setIframe(eventDto.getIframe());
-        Event savedEvent = eventRepository.save(event);
-        // Extraindo os parâmetros
+
         String titulo = eventDto.getTitle();
         String descricao = eventDto.getDescription();
-        Date startDateTime = eventDto.getStartDate();
-        playwrightService.runStreamYardAutomation(event.getTitle(), event.getDescription(), event.getStartDate(), 120);
+        LocalDateTime startDateTime = eventDto.getStartDate().atZone(ZoneOffset.UTC).toLocalDateTime();
+        event.setIframe(playwrightService.runStreamYardAutomation(titulo, descricao, startDateTime, 120));
+        Event savedEvent = eventRepository.save(event);
         return ResponseEntity.ok(savedEvent);
     }
 

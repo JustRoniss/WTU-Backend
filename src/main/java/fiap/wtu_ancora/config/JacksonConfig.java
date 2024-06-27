@@ -1,5 +1,6 @@
 package fiap.wtu_ancora.config;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,7 @@ public class JacksonConfig {
     public ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new Hibernate5Module());
+        mapper.registerModule(new JavaTimeModule());
         return mapper;
     }
 }

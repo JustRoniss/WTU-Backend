@@ -3,6 +3,7 @@ package fiap.wtu_ancora.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,9 +18,9 @@ public class Event {
     private String title;
     private String description;
     @Temporal(TemporalType.TIMESTAMP)
-    private Date startDate;
+    private LocalDateTime startDate;
     @Temporal(TemporalType.TIMESTAMP)
-    private Date endDate;
+    private LocalDateTime endDate;
 
     @Transient
     private Long unitId;
@@ -47,7 +48,7 @@ public class Event {
     )
     private Set<User> users = new HashSet<>();
 
-    public Event(Long id, String title, String description, Date startDate, Date endDate, Long unitId, Set<String> userEmails, String iframe, Set<Unit> units, Set<User> users) {
+    public Event(Long id, String title, String description, LocalDateTime startDate, LocalDateTime endDate, Long unitId, Set<String> userEmails, String iframe, Set<Unit> units, Set<User> users) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -88,19 +89,19 @@ public class Event {
         this.description = description;
     }
 
-    public Date getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 
